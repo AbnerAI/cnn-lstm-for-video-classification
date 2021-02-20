@@ -15,32 +15,21 @@ def train_epoch(model, data_loader, criterion, optimizer, epoch, log_interval, d
     train_loss = 0.0
     losses = AverageMeter()
     accuracies = AverageMeter()
-
+    
     # iter_source = iter(data_loader)
     num_iter  = len(data_loader)
     for batch_idx, sample in enumerate(data_loader):
-        if batch_idx==12:
-            break
-        data = sample['imgs'].view(-1, batch_size, 3, 224, 224)
+        data = sample['imgs'].permute([1,0,2,3,4])#.view(-1, batch_size, 3, 224, 224)
         targets = sample["label"] 
-		# path_ = sample["path"]
-		# print(imgs.shape)
-		# print(label)
-    # for batch_idx in range(1, num_iter):
-        # data, targets = iter_source.next()
-        # data, targets = imgs.to(device), label.to(device)
         outputs = model(data)
-        # print(outputs.shape)
-        # print(outputs)
-        # exit(0)
+   
         loss = criterion(outputs, targets) # outputs.shape: [1, 2] & targets.shape: [1]
         acc = calculate_accuracy(outputs, targets)
         
         train_loss += loss.item()
-        # print('loss item: ', loss.item())
-        losses.update(loss.item(), data.size(0))
-        accuracies.update(acc, data.size(0))
-
+        losses.update(loss.item(), data.size(1)) # data.size(1) is batch-size 
+        accuracies.update(acc, data.size(1))
+        
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()

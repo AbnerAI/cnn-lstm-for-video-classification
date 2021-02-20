@@ -134,25 +134,6 @@ import numpy as np
 #         model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
 #     return model
 
-
-# class CNNLSTM(nn.Module):
-#     def __init__(self, num_classes=2):
-#         super(CNNLSTM, self).__init__()
-#         self.firstNet = resnet34(pretrained=True)
-#         self.firstNet.fc = nn.Linear(512,254)
-#         # self.firstNet.fc = nn.Sequential(nn.Linear(self.firstNet.fc.in_features, 254))  
-# #         self.lstm = nn.LSTM(input_size=300, hidden_size=256, num_layers=3)
-#         # self.secondLine1 = nn.Linear(512,254)
-#         self.secondLine2 = nn.Linear(254,64)
-#         self.secondLine3 = nn.Linear(64,2)
-
-#     def forward(self, x):
-#         x = self.firstNet(x)
-#         # x = self.secondLine1(x)
-#         x = self.secondLine2(x)
-#         x = self.secondLine3(x)
-#         return x
-
 # class CNNLSTM(nn.Module):
 #     # def __init__(self, n_classes, batch_size, device):
 #     def __init__(self, num_classes=2):
@@ -243,8 +224,8 @@ class CNNLSTM(nn.Module):
     def __init__(self, num_classes=2):
         super(CNNLSTM, self).__init__()
         self.resnet = resnet34(pretrained=True)
-        self.resnet.fc = nn.Sequential(nn.Linear(self.resnet.fc.in_features, 3))  
-        self.lstm = nn.LSTM(input_size=3, hidden_size=256, num_layers=2)
+        self.resnet.fc = nn.Sequential(nn.Linear(self.resnet.fc.in_features, 2))# 3->2  
+        self.lstm = nn.LSTM(input_size=2, hidden_size=256, num_layers=2)# input_size: 3-2
         self.fc1 = nn.Linear(256, 128) # Fully connected layer
         self.fc2 = nn.Linear(128, num_classes) # Fully connected layer
     
@@ -253,17 +234,30 @@ class CNNLSTM(nn.Module):
         x_ = list()
         for t in range(x_3d.size(1)):
             x = self.resnet(x_3d[:, t, :, :, :]) # x_3d[:, t, :, :, :].shape: [1,3,224,224] 
-            # print(x.shape)
+            # print(x.unsqueeze(1).shape)
             out, hidden = self.lstm(x.unsqueeze(1), hidden) 
-            # print(out.shape)
-            
+
             x = self.fc1(out[-1, :, :])
             x = F.relu(x)
             x = self.fc2(x)
-            # print(x.shape)
-            # exit(0)
             if t==0:
                 x_ = x
             else:
                 x_ = torch.cat([x_, x], dim=0)
         return x_ 
+
+# class CNNLSTM(nn.Module):
+#     def __init__(self, num_classes=2):
+#         super(CNNLSTM, self).__init__()
+#         self.firstNet = resnet34(pretrained=True)
+#         self.firstNet.fc = nn.Linear(512,254)
+#         self.secondLine2 = nn.Linear(254,64)
+#         self.secondLine3 = nn.Linear(64,2)
+
+#     def forward(self, x):
+#         x = x.squeeze(0)
+#         x = self.firstNet(x)
+#         # x = self.secondLine1(x)
+#         x = self.secondLine2(x)
+#         x = self.secondLine3(x)
+#         return x
