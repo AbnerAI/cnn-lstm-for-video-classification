@@ -6,9 +6,10 @@
 > 3. There was a problem with the crop code before, now the data has been re-crop.
 > 4. Find the reason of no drop in accuracy, Mainly because of data imbalance.
 > 5. Fixed bug: losses.update(loss.item(), data.size(1)) & accuracies.update(acc, data.size(1)) # data.size(1) is batch-size, not data.size(0)
-> 6. Add validation set code.
+> 6. Add validation set code. 
+> 7. Remove the fully connected layer of Resnet
 
-Note that: V0.2 used the thyroid data set of the medical examination department, and I **manually duplicated** the **C** classification to ensure that the data is balanced.
+Note that: V0.2 used the thyroid data set of the medical examination department, and I **manually duplicated** the **C** classification to ensure that the data is balanced. What's more, the data of the validation set comes from the training set. So the next step is to focus on the production of the data set.
 
 ### V 0.1 
 
