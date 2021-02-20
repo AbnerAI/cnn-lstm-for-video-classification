@@ -8,6 +8,8 @@
 > 5. Fixed bug: losses.update(loss.item(), data.size(1)) & accuracies.update(acc, data.size(1)) # data.size(1) is batch-size, not data.size(0)
 > 6. Add validation set code.
 
+Note that: V0.2 used the thyroid data set of the medical examination department, and I **manually duplicated** the **C** classification to ensure that the data is balanced.
+
 ### V 0.1 
 
 > 1. Implement seq_len in dataloader module of pytorch.
